@@ -82,6 +82,8 @@ jobs:
 
   macos:
     needs: verify
+    # 暂时只打 Windows 包，另行通知后再打开。
+    if: false
     runs-on: macos-14
     strategy:
       fail-fast: false
@@ -212,6 +214,8 @@ jobs:
 
   linux:
     needs: verify
+    # 暂时只打 Windows 包，另行通知后再打开。
+    if: false
     # Ubuntu 22.04's glibc (2.35) is the oldest the AppImage runs on.
     runs-on: ubuntu-22.04
     timeout-minutes: 120
