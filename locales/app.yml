@@ -95,11 +95,11 @@ app.shortcut_group.editor:
   en: Editor
 
 app.shortcut_refusal.needs_modifier_mac:
-  zh-CN: 快捷键要带 ⌘、⌥ 或 ⌃，或者使用 F1–F12。
-  en: A shortcut needs ⌘, ⌥ or ⌃, or one of F1–F12.
+  zh-CN: 快捷键要带 ⌘、⌥ 或 ⌃，或者使用 F1–F12，或者 Shift 加 Insert、Delete、Home、End、Page Up、Page Down。
+  en: A shortcut needs ⌘, ⌥ or ⌃, or one of F1–F12, or Shift with Insert, Delete, Home, End, Page Up or Page Down.
 app.shortcut_refusal.needs_modifier:
-  zh-CN: 快捷键要带 Ctrl 或 Alt，或者使用 F1–F12。
-  en: A shortcut needs Ctrl or Alt, or one of F1–F12.
+  zh-CN: 快捷键要带 Ctrl 或 Alt，或者使用 F1–F12，或者 Shift 加 Insert、Delete、Home、End、Page Up、Page Down。
+  en: A shortcut needs Ctrl or Alt, or one of F1–F12, or Shift with Insert, Delete, Home, End, Page Up or Page Down.
 app.shortcut_refusal.needs_digit_mac:
   zh-CN: 这一项要按带修饰键的数字 1，例如 ⌘1。
   en: Press the digit 1 with a modifier, such as ⌘1.

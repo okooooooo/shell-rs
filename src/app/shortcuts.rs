@@ -487,7 +487,7 @@ fn same_keystroke(a: &Keystroke, b: &Keystroke) -> bool {
 /// Why a key cannot be a shortcut.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Refusal {
-    /// A plain key: it would stop typing it.
+    /// A key that would stop typing: a letter, a digit, or Shift with one.
     NeedsModifier,
     /// 切换到标签 1…9 takes a modifier with a digit.
     NeedsDigit,
@@ -544,7 +544,10 @@ pub fn check(
             return Err(Refusal::NeedsDigit);
         }
         keystroke.key = "1".into();
-    } else if !held && !is_function_key(&keystroke.key) {
+    } else if !held
+        && !is_function_key(&keystroke.key)
+        && !(modifiers.shift && is_cluster_key(&keystroke.key))
+    {
         return Err(Refusal::NeedsModifier);
     }
     let keys = keystroke.unparse();
@@ -587,6 +590,17 @@ fn is_function_key(key: &str) -> bool {
     key.strip_prefix('f')
         .and_then(|number| number.parse::<u8>().ok())
         .is_some_and(|number| (1..=24).contains(&number))
+}
+
+/// Insert, Delete, Home, End, Page Up and Page Down: they sit above the
+/// arrow keys and type nothing, so Shift with one of them does not stop
+/// typing the way Shift+J or Shift+= would. Alone they still go to the
+/// terminal or a list, as vim and the SFTP pane use them.
+fn is_cluster_key(key: &str) -> bool {
+    matches!(
+        key,
+        "insert" | "delete" | "home" | "end" | "pageup" | "pagedown"
+    )
 }
 
 /// The keys of a shortcut, one cap each, in the platform's order: ⌃⌥⇧⌘
@@ -1041,8 +1055,19 @@ mod tests {
 
         assert_eq!(check(new_host, "j"), Err(Refusal::NeedsModifier));
         assert_eq!(check(new_host, "shift-j"), Err(Refusal::NeedsModifier));
+        assert_eq!(check(new_host, "shift-="), Err(Refusal::NeedsModifier));
+        assert_eq!(check(new_host, "shift-up"), Err(Refusal::NeedsModifier));
+        assert_eq!(check(new_host, "insert"), Err(Refusal::NeedsModifier));
         assert_eq!(check(new_host, "f5"), Ok("f5".into()));
         assert_eq!(check(new_host, "alt-j"), Ok("alt-j".into()));
+        for key in ["insert", "delete", "home", "end", "pageup", "pagedown"] {
+            let keys = format!("shift-{key}");
+            assert_eq!(check(new_host, &keys), Ok(keys), "{key}");
+        }
+        assert_eq!(
+            check(shortcut("terminal-paste"), "shift-insert"),
+            Ok("shift-insert".into())
+        );
         // Taken by another shortcut working anywhere.
         let terminal = shortcut("new-local-terminal");
         assert_eq!(
